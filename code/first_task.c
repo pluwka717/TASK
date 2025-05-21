@@ -1,0 +1,82 @@
+#include <stdio.h>
+#include <stdlib.h>
+void merge (int *arr, int l, int m, int r)
+{
+    int i,j,k=l;
+    int size_first= m+1-l;
+    int size_second=r-m;
+
+    int *first_arr=(int *)malloc(size_first*sizeof(int));
+    int *second_arr=(int *)malloc(size_second*sizeof(int));
+
+    for (i=0;i<size_first;i++)
+    {
+        *(first_arr+i)=*(arr+i+l);
+    }
+
+    for (j=0;j<size_second;j++)
+    {
+        *(second_arr+j)=*(arr+j+m+1);
+    }
+
+    i=j=0;
+
+    while (i< size_first && j<size_second)
+    {
+        if (*(first_arr+i) <= *(second_arr+j)) {
+            *(arr+k)=*(first_arr+i);
+            i++;
+        }
+        else {
+            *(arr+k)=*(second_arr+j);
+            j++;
+        }
+        k++;
+    }
+        while (i<size_first)
+        {
+        *(arr+k)=*(first_arr+i);
+        i++;
+        k++;
+        }
+        while (j<size_second)
+        {
+            *(arr+k)=*(second_arr+j);
+            j++;
+            k++;
+        }
+
+    free(first_arr);
+    free(second_arr);
+}
+void sequential_sort(int *arr,int l,int r)
+{
+    if (l<r) {
+        int m=l+(r-l)/2;
+        sequential_sort(arr,l,m);
+        sequential_sort(arr,m+1,r);
+        merge(arr,l,m,r);
+    }
+}
+
+
+
+int main ()
+{
+    int i,size;
+    printf("start\n");
+    scanf("%d",&size);
+    int *arr=(int*)malloc(size*sizeof(int));
+    for (i=0;i<size;i++)
+    {
+        scanf("%d",arr+i);
+    }
+    sequential_sort(arr,0,size-1);
+    for (i=0;i<size;i++)
+    {
+        printf("%d; ",*(arr+i));
+    }
+    free(arr);
+    return 0;
+    
+}

@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 
 void print_arr (int *arr,int r)
 {
@@ -71,16 +72,19 @@ void merge (int *arr, int l, int m, int r)
 
 int main ()
 {
-    int i,size;
-    printf("Start\n");
+    int i,size,range;
+    srand((int)time(NULL));
+    printf("Start\nPut size of array:");
     scanf("%d",&size);
-
+    printf("Put range of array:");
+    scanf("%d",&range);
     int *arr=(int*)malloc(size*sizeof(int));
 
     for (i=0;i<size;i++)
     {
-        scanf("%d",arr+i);
+        *(arr+i)=(rand() % range);
     }
+
     sequential_sort(arr,0,size-1);
 
     print_arr(arr,size); 

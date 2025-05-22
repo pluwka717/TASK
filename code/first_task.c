@@ -10,15 +10,7 @@ void print_arr (int *arr,int r)
     }
 }
 
-void sequential_sort(int *arr,int l,int r)
-{
-    if (l<r) {
-        int m=l+(r-l)/2;
-        sequential_sort(arr,l,m);
-        sequential_sort(arr,m+1,r);
-        merge(arr,l,m,r);
-    }
-}
+
 
 void merge (int *arr, int l, int m, int r)
 {
@@ -70,6 +62,23 @@ void merge (int *arr, int l, int m, int r)
     free(second_arr);
 }
 
+void sequential_sort(int *arr,int l,int r)
+{
+    if (l<r) {
+        int m=l+(r-l)/2;
+        sequential_sort(arr,l,m);
+        sequential_sort(arr,m+1,r);
+        merge(arr,l,m,r);
+    }
+}
+void get_rand_array(int *arr, int size,int range)
+{
+        for (int i=0;i<size;i++)
+    {
+        *(arr+i)=(rand() % range);
+    }
+}
+
 int main ()
 {
     int i,size,range;
@@ -80,10 +89,10 @@ int main ()
     scanf("%d",&range);
     int *arr=(int*)malloc(size*sizeof(int));
 
-    for (i=0;i<size;i++)
-    {
-        *(arr+i)=(rand() % range);
-    }
+    get_rand_array(arr,size,range);
+
+    print_arr(arr,size);
+    printf ("\n");
 
     sequential_sort(arr,0,size-1);
 

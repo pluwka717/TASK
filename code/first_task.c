@@ -1,5 +1,24 @@
 #include <stdio.h>
 #include <stdlib.h>
+
+void print_arr (int *arr,int r)
+{
+    for (int i=0;i<r;i++)
+    {
+        printf("%d; ",*(arr+i));
+    }
+}
+
+void sequential_sort(int *arr,int l,int r)
+{
+    if (l<r) {
+        int m=l+(r-l)/2;
+        sequential_sort(arr,l,m);
+        sequential_sort(arr,m+1,r);
+        merge(arr,l,m,r);
+    }
+}
+
 void merge (int *arr, int l, int m, int r)
 {
     int i,j,k=l;
@@ -49,33 +68,23 @@ void merge (int *arr, int l, int m, int r)
     free(first_arr);
     free(second_arr);
 }
-void sequential_sort(int *arr,int l,int r)
-{
-    if (l<r) {
-        int m=l+(r-l)/2;
-        sequential_sort(arr,l,m);
-        sequential_sort(arr,m+1,r);
-        merge(arr,l,m,r);
-    }
-}
-
-
 
 int main ()
 {
     int i,size;
-    printf("start\n");
+    printf("Start\n");
     scanf("%d",&size);
+
     int *arr=(int*)malloc(size*sizeof(int));
+
     for (i=0;i<size;i++)
     {
         scanf("%d",arr+i);
     }
     sequential_sort(arr,0,size-1);
-    for (i=0;i<size;i++)
-    {
-        printf("%d; ",*(arr+i));
-    }
+
+    print_arr(arr,size); 
+
     free(arr);
     return 0;
     

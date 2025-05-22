@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <time.h>
 #include <pthread.h>
+#include <string.h>
 
 typedef struct {
     int *arr;
@@ -82,6 +83,7 @@ void sequential_sort(int *arr,int l,int r)
         merge(arr,l,m,r);
     }
 }
+
 void get_rand_array(int *arr, int size,int range)
 {
         for (int i=0;i<size;i++)
@@ -107,6 +109,13 @@ void merge_thread_sort(int *arr,int l,int r)
         pthread_mutex_unlock(&mutex_count);
 
         args_left = (thr_arg *)malloc (sizeof(thr_arg));
+        if(!args_left){
+            printf("error: thread storage\n");
+            pthread_mutex_lock(&mutex_count);
+            current_th--;
+            pthread_mutex_unlock(&mutex_count);
+            exit(EXIT_FAILURE);
+        }
         args_left->arr=arr;
         args_left->l=l;
         args_left->r=m;
@@ -137,8 +146,6 @@ void merge_thread_sort(int *arr,int l,int r)
     merge(arr,l,m,r);
 }
     
-
-
 void *thread_ent (void *arg)
 {
     thr_arg *params = (thr_arg *)arg;
@@ -148,6 +155,7 @@ void *thread_ent (void *arg)
 
     return NULL;
 }
+
 int main ()
 {
     int i,size,range;
@@ -157,6 +165,10 @@ int main ()
     printf("Put range of array:");
     scanf("%d",&range);
     int *arr=(int*)malloc(size*sizeof(int));
+    if (!arr){
+        printf ("error: array doesnt created\n");
+        exit(EXIT_FAILURE);
+    }
 
     get_rand_array(arr,size,range);
 

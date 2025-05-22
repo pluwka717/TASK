@@ -20,7 +20,7 @@ void print_arr (int *arr,int r)
 {
     for (int i=0;i<r;i++)
     {
-        printf("- %d\n",*(arr+i));
+        printf("%d\t",*(arr+i));
     }
 }
 
@@ -173,7 +173,7 @@ int main ()
     get_rand_array(arr,size,range);
 
     print_arr(arr,size);
-    printf ("\n");
+    printf ("\n========================================================\n");
 
     merge_thread_sort(arr,0,size-1);
 

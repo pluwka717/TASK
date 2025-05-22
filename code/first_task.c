@@ -1,16 +1,27 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include <pthread.h>
+
+typedef struct {
+    int *arr;
+    int l;
+    int r;
+} thr_arg;
+
+pthread_mutex_t mutex_count;
+pthread_cond_t cond_count;
+int current_th =0;
+int MAX_current_th=4;
+int thread_minsize=1000;
 
 void print_arr (int *arr,int r)
 {
     for (int i=0;i<r;i++)
     {
-        printf("%d; ",*(arr+i));
+        printf("- %d\n",*(arr+i));
     }
 }
-
-
 
 void merge (int *arr, int l, int m, int r)
 {
@@ -79,6 +90,64 @@ void get_rand_array(int *arr, int size,int range)
     }
 }
 
+void *thread_ent (void *arg);
+
+void merge_thread_sort(int *arr,int l,int r)
+{
+    if(l>=r){return;}
+    int m=l+(r-l)/2;
+
+    pthread_t tid_left;
+    thr_arg *args_left=0;
+    int th_created=0;
+
+    pthread_mutex_lock(&mutex_count);
+    if (current_th < MAX_current_th && (r-l+1)>thread_minsize){
+        current_th++;
+        pthread_mutex_unlock(&mutex_count);
+
+        args_left = (thr_arg *)malloc (sizeof(thr_arg));
+        args_left->arr=arr;
+        args_left->l=l;
+        args_left->r=m;
+
+        if (pthread_create(&tid_left,NULL,thread_ent,args_left)!=0) {
+            free(args_left);
+            pthread_mutex_lock(&mutex_count);
+            current_th--;
+            pthread_mutex_unlock(&mutex_count);
+            sequential_sort(arr,l,m);
+        } else {
+            th_created=1;
+            }
+        }
+    else {
+            pthread_mutex_unlock(&mutex_count);
+            sequential_sort(arr,l,m);
+    }
+    merge_thread_sort(arr,m+1,r);
+        
+    if (th_created){
+        pthread_join(tid_left,NULL);
+        pthread_mutex_lock(&mutex_count);
+        current_th--;
+        pthread_cond_signal(&cond_count);
+        pthread_mutex_unlock(&mutex_count);
+        }
+    merge(arr,l,m,r);
+}
+    
+
+
+void *thread_ent (void *arg)
+{
+    thr_arg *params = (thr_arg *)arg;
+
+    merge_thread_sort(params->arr,params->l,params->r);
+    free(params);
+
+    return NULL;
+}
 int main ()
 {
     int i,size,range;
@@ -94,7 +163,7 @@ int main ()
     print_arr(arr,size);
     printf ("\n");
 
-    sequential_sort(arr,0,size-1);
+    merge_thread_sort(arr,0,size-1);
 
     print_arr(arr,size); 
 
